@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="Neo">
-        <setting label="Cats Watch TV" type="text" enable="false"></setting>
+        <setting label="Neo" type="text" enable="false"></setting>
         <setting label="Stream tv shows and movies using ScrapeCore" type="text" enable="false"></setting>
-        <setting label="Uses Premiumize.ME and RealDebrid for premium links" type="text" enable="false"></setting>
+        <setting label="Uses Tratk.tv for metadata. Account not required." type="text" enable="false"></setting>
         <setting type="sep"></setting>
         <setting label="For support go to http://tvaddons.co" type="lsep"></setting>
         <setting default="" id="user_agent" type="text" visible="false"></setting>
