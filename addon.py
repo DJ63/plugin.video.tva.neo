@@ -465,9 +465,15 @@ def play_stream():
 def on_play_back_stop():
 	import json
 	from commoncore import trakt
-	percent = int(kodi.get_property('percent', 'service.fanart.proxy'))
-	current_time = kodi.get_property('current_time', 'service.fanart.proxy')
-	total_time = kodi.get_property('total_time', 'service.fanart.proxy')
+	try:
+		percent = int(kodi.get_property('percent', 'service.fanart.proxy'))
+		current_time = kodi.get_property('current_time', 'service.fanart.proxy')
+		total_time = kodi.get_property('total_time', 'service.fanart.proxy')
+	except:
+		percent = 0		
+		current_time = 0
+		total_time = 0
+
 	ids = kodi.arg('ids', decode='json')
 	if kodi.args['media'] == 'episode':
 		response = trakt.get_episode_info(ids['trakt'], ids['season'], ids['episode'])
