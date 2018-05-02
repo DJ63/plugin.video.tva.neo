@@ -1,41 +1,44 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="Neo">
-        <setting label="Neo" type="text" enable="false"></setting>
-        <setting label="Stream tv shows and movies using ScrapeCore" type="text" enable="false"></setting>
-        <setting label="Uses Tratk.tv for metadata. Account not required." type="text" enable="false"></setting>
-        <setting type="sep"></setting>
-        <setting label="For support go to http://tvaddons.co" type="lsep"></setting>
-        <setting default="" id="user_agent" type="text" visible="false"></setting>
-        <setting default="" id="agent_refresh_time" type="text" visible="false"></setting>
+        <setting label="Neo" type="text" enable="false" />
+        <setting label="Stream tv shows and movies using ScrapeCore" type="text" enable="false" />
+        <setting label="Uses Tratk.tv for metadata. Account not required." type="text" enable="false" />
+        <setting type="sep" />
+        <setting label="For support go to http://tvaddons.co" type="lsep" />
+        <setting default="" id="user_agent" type="text" visible="false" />
+        <setting default="" id="agent_refresh_time" type="text" visible="false" />
+    </category>
+    <category label="Playback">
+        <setting default="false" id="refresh_onstop" type="bool" label="Refresh Directory on Playback Stop" />
     </category>
     <category label="Advanced">
-        <setting default="true" id="use_native_master_control" type="bool" label="Enable Native Master Control" visible="true" enabled="HasAddon(master.control)"></setting>
-        <setting default="true" id="enable_default_views" type="bool" label="Enable Default Views" visible="true"></setting>
-        <setting default="" id="default_list_view" type="text" visible="false"></setting>
-        <setting default="" id="default_movie_view" type="text" visible="false"></setting>
-        <setting default="" id="default_show_view" type="text" visible="false"></setting>
-        <setting default="" id="default_season_view" type="text" visible="false"></setting>
-        <setting default="" id="default_episode_view" type="text" visible="false"></setting>
-        <setting default="" id="default_stream_view" type="text" visible="false"></setting>
-        <setting default="" id="scrapecore_settings" label="ScrapeCore Settings" type="action" action="RunPlugin(plugin://script.module.scrapecore/?mode=addon_settings)" option="close"></setting>
-        <setting default="" id="fanart_proxy_settings" label="Fanart Proxy Settings" type="action" action="RunPlugin(plugin://plugin.video.tva.neo/?mode=open_settings&addon_id=service.fanart.proxy)" option="close"></setting>
-        <setting default="" id="commoncore_settings" label="CommonCore Settings" type="action" action="RunPlugin(plugin://plugin.video.tva.neo/?mode=open_settings&addon_id=script.module.commoncore)" option="close"></setting>
-        <setting label="Fanart Service" type="lsep"/>
-        <setting id="fanart_proxy_remote" default="false" type="bool" label="Connect Remote Fanart Server"/>
-        <setting id="fanart_proxy_protocol" type="labelenum" label="Protocol" values="http|https" default="https" enable="!eq(-1,false)"/>
-        <setting id="fanart_proxy_host" type="text" label="Fanart Proxy Host" default="127.0.0.1" enable="!eq(-2,false)"/>
-        <setting id="fanart_proxy_port" type="number" label="Fanart Proxy Host" default="8000" enable="!eq(-3,false)"/>
+        <setting default="true" id="use_native_master_control" type="bool" label="Enable Native Master Control" visible="true" enabled="HasAddon(master.control)" />
+        <setting default="true" id="enable_default_views" type="bool" label="Enable Default Views" visible="true" />
+        <setting default="" id="default_list_view" type="text" visible="false" />
+        <setting default="" id="default_movie_view" type="text" visible="false" />
+        <setting default="" id="default_show_view" type="text" visible="false" />
+        <setting default="" id="default_season_view" type="text" visible="false" />
+        <setting default="" id="default_episode_view" type="text" visible="false" />
+        <setting default="" id="default_stream_view" type="text" visible="false" />
+        <setting default="" id="scrapecore_settings" label="ScrapeCore Settings" type="action" action="RunPlugin(plugin://script.module.scrapecore/?mode=addon_settings)" option="close" />
+        <setting default="" id="fanart_proxy_settings" label="Fanart Proxy Settings" type="action" action="RunPlugin(plugin://plugin.video.tva.neo/?mode=open_settings&addon_id=service.fanart.proxy)" option="close" visible="System.HasAddon(service.fanart.proxy)" />
+        <setting default="" id="commoncore_settings" label="CommonCore Settings" type="action" action="RunPlugin(plugin://plugin.video.tva.neo/?mode=open_settings&addon_id=script.module.commoncore)" option="close" />
+        <setting label="Fanart Service" type="lsep" visible="System.HasAddon(service.fanart.proxy)"/>
+        <setting id="fanart_proxy_remote" default="false" type="bool" label="Connect Remote Fanart Server" visible="System.HasAddon(service.fanart.proxy)" />
+        <setting id="fanart_proxy_protocol" type="labelenum" label="Protocol" values="http|https" default="https" enable="!eq(-1,false)" visible="System.HasAddon(service.fanart.proxy)" />
+        <setting id="fanart_proxy_host" type="text" label="Fanart Proxy Host" default="127.0.0.1" enable="!eq(-2,false)" visible="System.HasAddon(service.fanart.proxy)" />
+        <setting id="fanart_proxy_port" type="number" label="Fanart Proxy Host" default="8000" enable="!eq(-3,false)" visible="System.HasAddon(service.fanart.proxy)" />
     </category>
     <category label="Cache">
-        <setting default="0" enabled="!eq(-1,false)" id="database_type" label="Database Type" type="enum" values="SQLite|MySQL"></setting>
-        <setting label="SQLite" type="lsep"></setting>
-        <setting default="special://profile/addon_data/plugin.video.tva.neo/API_CACHE/cache.db" enable="eq(-2,0)" id="database_sqlite_file" label="Database File" subsetting="true" type="file"></setting>
-        <setting label="MySQL" type="lsep"></setting>
-        <setting default="" enable="eq(-4,1)" id="database_mysql_host" label="Host" subsetting="true" type="text"></setting>
-        <setting default="neo_cache" enable="eq(-5,1)" id="database_mysql_name" label="Schema" subsetting="true" type="text"></setting>
-        <setting default="" enable="eq(-6,1)" id="database_mysql_user" label="Username" subsetting="true" type="text"></setting>
-        <setting default="" enable="eq(-7,1)" id="database_mysql_pass" label="Password" option="hidden" subsetting="true" type="text"></setting>
-        <setting default="3306" enable="eq(-8,1)" id="database_mysql_port" label="Port" subsetting="true" type="number"></setting>
+        <setting default="0" enabled="!eq(-1,false)" id="database_type" label="Database Type" type="enum" values="SQLite|MySQL" />
+        <setting label="SQLite" type="lsep" />
+        <setting default="special://profile/addon_data/plugin.video.tva.neo/API_CACHE/cache.db" enable="eq(-2,0)" id="database_sqlite_file" label="Database File" subsetting="true" type="file" />
+        <setting label="MySQL" type="lsep" />
+        <setting default="" enable="eq(-4,1)" id="database_mysql_host" label="Host" subsetting="true" type="text" />
+        <setting default="neo_cache" enable="eq(-5,1)" id="database_mysql_name" label="Schema" subsetting="true" type="text" />
+        <setting default="" enable="eq(-6,1)" id="database_mysql_user" label="Username" subsetting="true" type="text" />
+        <setting default="" enable="eq(-7,1)" id="database_mysql_pass" label="Password" option="hidden" subsetting="true" type="text" />
+        <setting default="3306" enable="eq(-8,1)" id="database_mysql_port" label="Port" subsetting="true" type="number" />
     </category>
 </settings>
