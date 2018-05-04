@@ -5,6 +5,7 @@
     <import addon="script.module.commoncore" />
     <import addon="script.module.scrapecore" />
     <import addon="service.core.playback" />
+    <import addon="resource.artwork.neo" />
     <import addon="script.trakt" />
     <import addon="service.fanart.proxy" optional="true"/>
     <import addon="master.control" optional="true"/>
