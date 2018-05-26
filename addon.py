@@ -26,6 +26,7 @@ def main():
 	menu.add('Set Default View', {"mode": "set_default_view", "api": {"name": "kodi", "method": "set_default_view", "args": ("list",)}})
 	kodi.add_menu_item({'mode': 'tv_menu'}, {'title': "Shows"}, menu=menu, icon='shows.png')
 	kodi.add_menu_item({'mode': 'movie_menu'}, {'title': "Movies"}, menu=menu, icon='movies.png')
+	kodi.add_menu_item({'mode': 'execute_api', "api": {"name": "kodi", "method": "go_to_url", "args": ("plugin://plugin.video.scrapecore.bowser", )}}, {'title': "Bowser"}, menu=menu, icon='bowser.png', visible=kodi.get_condition_visiblity('System.HasAddon(plugin.video.scrapecore.bowser)')==1)
 	kodi.add_menu_item({'mode': 'settings_menu'}, {'title': "Settings and Tools"}, menu=menu, icon='settings.png')
 	kodi.eod(DEFAULT_VIEWS.LIST)
 
@@ -275,6 +276,7 @@ def calendars():
 		inprogress = in_progress('episode', infoLabel['trakt_id'])
 		ids['episode_ids'] = episode['ids']
 		menu.add('Toggle Watched', {"mode": "toggle_watched", "api": {"name": "trakt", "method": "set_watched_state", "args": ("episode", infoLabel['trakt_id'], infoLabel['playcount'] == 0), "refresh": True}})
+		menu.add('Browse Seasons', {"mode": "list_seasons", "trakt_id": show['ids']['trakt'], "ids": show['ids']})
 		menu.add('Set Default View', {"mode": "set_default_view", "api": {"name": "kodi", "method": "set_default_view", "args": ("episode",)}})		
 		kodi.add_menu_item({"mode": "search_streams", "media": "episode", "trakt_id": infoLabel['trakt_id'], "title": show['title'], "episode_title": infoLabel['title'], "year": show['year'], "season": infoLabel['season'], "episode": infoLabel['episode'], "ids": ids}, infoLabel, in_progress=inprogress, menu=menu, image=infoLabel['poster'])
 
@@ -452,12 +454,12 @@ def master_control():
 
 @kodi.register("open_settings")
 def addon_settings():
+	from scrapecore import scrapers
 	kodi.open_settings(kodi.arg('addon_id'))
 	
 @kodi.register('search_streams')
 def search_streams():
 	from scrapecore import scrapers
-	from scrapecore.scrapers.common import QUALITY
 	results = scrapers.search(kodi.args['media'], kodi.args['title'], episode_title=kodi.arg('episode_title'), year=kodi.arg('year'), season=kodi.arg('season'), episode=kodi.arg('episode'), trakt_id=kodi.arg('trakt_id'))
 	if len(results) == 0 :
 		kodi.handel_error(kodi.get_name(), 'Not results found')
@@ -469,31 +471,33 @@ def search_streams():
 	def make_stream_directory(r):
 		menu = kodi.ContextMenu()
 		menu.add('Set Default View', {"mode": "set_default_view", "api": {"name": "kodi", "method": "set_default_view", "args": ("stream",)}})
-		quality = QUALITY.r_map[r['quality']]
 		infoLabel = {"title": r['title'], "display": r['display']}
 		menu.add('Master Control', {"mode": "master_control", "media": kodi.args['media'], "raw_url": r['raw_url'], "service": r['service'], "title": kodi.args['title'], "year": kodi.arg('year'), "season": kodi.arg('season'), "episode": kodi.arg('episode'), "trakt_id": kodi.arg('trakt_id')})
 		if r['torrent']:
 			menu.add('Add to Cloud', {"mode": "execute_api", "api": {"name": "premiumize", "method": "create_transfer", "args": (r['raw_url'],), "notify": True, "confirm": "Add to Premiumize Cloud?", "message": r['title']}})
-		kodi.add_video_item({"mode": "play_stream", "raw_url": r['raw_url'], "title": kodi.args['title'],  "service": r['service'], "ids": ids, "media": kodi.args['media'], "trakt_id": kodi.args['trakt_id']}, infoLabel, menu=menu, icon="definition/%s.png" % quality.lower())
+		kodi.add_video_item({"mode": "play_stream", "raw_url": r['raw_url'], "title": kodi.args['title'],  "service": r['service'], "ids": ids, "media": kodi.args['media'], "trakt_id": kodi.args['trakt_id']}, infoLabel, menu=menu, icon=r['icon'])
 	kodi.eod(DEFAULT_VIEWS.STREAMS)
 	
-@kodi.register('play_stream')
+@kodi.register(['play_stream', 'play_direct'])
 def play_stream():
 	from scrapecore import scrapers
-	from commoncore import trakt
-	ids = kodi.arg('ids', decode='json')
-	if kodi.args['media'] == 'episode':
-		response = trakt.get_episode_info(ids['trakt'], ids['season'], ids['episode'])
-		infoLabel = core.make_infolabel('episode', response['items'], ids=ids)
-		show = trakt.get_show_info(ids['trakt'])
-		metadata = {"show": show, "episode": infoLabel, "ids": ids}
-		infoLabel['title'] = "%s-S%02dE%02d-%s" % (kodi.args['title'], int(ids['season']), int(ids['episode']), infoLabel['title'])
+	if kodi.mode == 'play_stream':
+		from commoncore import trakt
+		ids = kodi.arg('ids', decode='json')
+		if kodi.args['media'] == 'episode':
+			response = trakt.get_episode_info(ids['trakt'], ids['season'], ids['episode'])
+			infoLabel = core.make_infolabel('episode', response['items'], ids=ids)
+			show = trakt.get_show_info(ids['trakt'])
+			metadata = {"show": show, "episode": infoLabel, "ids": ids}
+			infoLabel['title'] = "%s-S%02dE%02d-%s" % (kodi.args['title'], int(ids['season']), int(ids['episode']), infoLabel['title'])
+		else:
+			response = trakt.get_movie_info(ids['trakt'])
+			infoLabel = core.make_infolabel('movie', response['items'])
+			metadata = {"movie": infoLabel, "ids": ids}
+		kodi.set_playback_info(metadata)
+		kodi.set_trakt_ids(ids)
 	else:
-		response = trakt.get_movie_info(ids['trakt'])
-		infoLabel = core.make_infolabel('movie', response['items'])
-		metadata = {"movie": infoLabel, "ids": ids}
-	kodi.set_playback_info(metadata)
-	kodi.set_trakt_ids(ids)
+		infoLabel = {"poster": "", "title": "", "resume_point": ""}
 	
 	resolved_url = scrapers.get_scraper_by_name(kodi.args['service']).resolve_url(kodi.args['raw_url'])
 	if resolved_url: kodi.play_stream(resolved_url, metadata=infoLabel)
